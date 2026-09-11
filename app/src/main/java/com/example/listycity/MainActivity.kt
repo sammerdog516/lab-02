@@ -18,9 +18,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,7 @@ fun CityListScreen(
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
+    var oldCityName by remember { mutableStateOf("") }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
@@ -75,6 +78,28 @@ fun CityListScreen(
                 }
             ) {
                 Text("Add City")
+            }
+            OutlinedTextField(
+                value = oldCityName,
+                onValueChange = { oldCityName = it },
+                label = {Text{"City Name"}},
+                modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    if (oldCityName.isNotBlank() and oldCityName is in cities) {
+                        onRemoveCity(oldCityName)
+                        oldCityName = ""
+                    }
+                    else {
+                        oldCityName = "Type a valid city name"
+                    }
+                }
+            ) {
+                Text("Remove City")
             }
         }
     }
@@ -118,5 +143,9 @@ class CityRepository {
 
     fun addCity(city: String) {
         _cities.add(city)
+    }
+
+    fun removeCity(city: String) {
+        _cities.remove(city)
     }
 }
