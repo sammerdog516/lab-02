@@ -53,10 +53,11 @@ class MainActivity : ComponentActivity() {
 fun CityListScreen(
     cities: List<String>,
     onAddCity: (String) -> Unit,
+    onRemoveCity: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
-    var oldCityName by remember { mutableStateOf("") }
+    var selectedCity by remember { mutableStateOf("") }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
@@ -80,9 +81,9 @@ fun CityListScreen(
                 Text("Add City")
             }
             OutlinedTextField(
-                value = oldCityName,
-                onValueChange = { oldCityName = it },
-                label = {Text{"City Name"}},
+                value = selectedCity,
+                onValueChange = { selectedCity = it },
+                label = {Text("City Name")},
                 modifier = Modifier.weight(1f)
             )
 
@@ -90,12 +91,12 @@ fun CityListScreen(
 
             Button(
                 onClick = {
-                    if (oldCityName.isNotBlank() and oldCityName is in cities) {
-                        onRemoveCity(oldCityName)
-                        oldCityName = ""
+                    if (selectedCity.isNotBlank() && selectedCity in cities) {
+                        onRemoveCity(selectedCity)
+                        selectedCity = ""
                     }
                     else {
-                        oldCityName = "Type a valid city name"
+                        selectedCity = "Type a valid city name"
                     }
                 }
             ) {
