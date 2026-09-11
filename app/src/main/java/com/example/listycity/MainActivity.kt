@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.clickable
 import com.example.listycity.ui.theme.ListyCityTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
                     CityListScreen(
                         cities = cityRepository.cities,
                         onAddCity = {cityRepository.addCity( it )},
+                        onRemoveCity = {cityRepository.removeCity( it)},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -57,7 +59,7 @@ fun CityListScreen(
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
-    var selectedCity by remember { mutableStateOf("") }
+    var selectedCity by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.padding(16.dp)) {
@@ -80,43 +82,36 @@ fun CityListScreen(
             ) {
                 Text("Add City")
             }
-            OutlinedTextField(
-                value = selectedCity,
-                onValueChange = { selectedCity = it },
-                label = {Text("City Name")},
-                modifier = Modifier.weight(1f)
-            )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Button(
                 onClick = {
-                    if (selectedCity.isNotBlank() && selectedCity in cities) {
-                        onRemoveCity(selectedCity)
-                        selectedCity = ""
+                    selectedCity?.let { city ->
+                        onRemoveCity(city)
+                        selectedCity = null
                     }
-                    else {
-                        selectedCity = "Type a valid city name"
-                    }
-                }
+                },
+                enabled = selectedCity != null
             ) {
                 Text("Remove City")
             }
         }
-    }
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(cities) { city ->
-            CityRow(city = city)
+        LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            items(cities) { city ->
+                CityRow(isSelected = city == selectedCity),
+                onClick = { selectedCity = city }
+            }
         }
     }
 }
 
 @Composable
-fun CityRow(city: String) {
+fun CityRow(city: String, isSelected: Boolean, onClick: () -> Unit) {
     Text(
         text = city,
         fontSize = 28.sp,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp).clickable { onClick() }
     )
 }
 @Composable
