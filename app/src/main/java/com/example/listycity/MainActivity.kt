@@ -99,15 +99,17 @@ fun CityListScreen(
         }
         LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
             items(cities) { city ->
-                CityRow(isSelected = city == selectedCity),
-                onClick = { selectedCity = city }
+                CityRow(city = city,
+                    isSelected = city == selectedCity,
+                    onClick = { selectedCity = city })
             }
         }
     }
 }
 
 @Composable
-fun CityRow(city: String, isSelected: Boolean, onClick: () -> Unit) {
+fun CityRow(city: String, isSelected: Boolean,
+            onClick: () -> Unit) {
     Text(
         text = city,
         fontSize = 28.sp,
